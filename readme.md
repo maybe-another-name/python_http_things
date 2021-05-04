@@ -11,14 +11,15 @@ Installation
     pip install requests
     pip install beautifulsoup4
     pip install requests-html
+    pip install aiohttp
     pip install pyppeteer
 
 Burp Integration
 ===============
 
-The extension 'Copy As Python-Requests' is very handy
+The extension 'Copy As Python-Requests' is very handy (allowing copy & paste between burp & requests).
 
 Pyppeteer Integration
 ===============
 
-Needs a Chromium-based browser started with the relevant arguments.
+Several scripts; *__'2_intercept_pyppeteer_request.py'__* will look for a Chromium-based browser started with the relevant arguments; if none is found, then it will launch a new instance.

@@ -1,5 +1,5 @@
 import asyncio
-from pyppeteer import connect
+from pyppeteer import connect, launch
 from pyppeteer.page import Page
 from pyppeteer.network_manager import Request, Response
 
@@ -55,6 +55,7 @@ async def async_allow_and_log(request: Request):
 def sync_request_interception(request: Request):
   return asyncio.create_task(async_request_interception(request))
 
+
 def sync_response_inspection(response: Response):
   # print(f"response.url: {response.url}")
   # print(f"  req.status: {response.status}")
@@ -62,10 +63,30 @@ def sync_response_inspection(response: Response):
   # print(f"  req.request.postData: {response.request.postData}")
   # print(f"  req.headers: {response.headers}")
   # print(f"\n")
+  pass
+
+
+async def get_existing_browser_websocket_url() -> str:
+  import aiohttp
+  async with aiohttp.ClientSession() as session:
+
+    try:
+      async with session.get("http://localhost:9222/json/version") as response:
+        chrome_details = await response.json()
+        return chrome_details['webSocketDebuggerUrl']
+    except aiohttp.ClientConnectorError:
+      print("start chrome --headless --remote-debugging-port=9222 --disable-gpu")
 
 
 async def main():
-  browser = await connect(browserWSEndpoint="ws://127.0.0.1:9222/devtools/browser/026206f8-2769-4072-b0b1-00b24d7bdadc")
+  browserWSEndpoint = await get_existing_browser_websocket_url()
+
+  browser = None
+  if browserWSEndpoint:
+    browser = await connect(browserWSEndpoint=browserWSEndpoint)  
+  else:
+    browser = await launch(headless=False)
+  
   page = await browser.newPage()
 
   await page.setRequestInterception(True)
