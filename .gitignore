@@ -3,3 +3,4 @@ venv
 *.pem
 *.log
 *.png
+local_chrome_data

@@ -18,9 +18,13 @@ async def async_request_interception(request: Request):
     print(f"denying request to url: {request.url}")
     return await request.abort()
 
-  if request.resourceType == 'script':
-    print(f"allowing the download of a script from: {request.url}")
-    return await async_allow_and_log(request)
+  if request.resourceType == 'script':    
+    if request.url.find('cookie') > 0:
+      print(f"denying the download of an script from: {request.url}")
+      return await request.abort()
+    else:
+      print(f"allowing the download of a script from: {request.url}")
+      return await async_allow_and_log(request)
   if request.resourceType == 'image':
     print(f"denying the download of an image from: {request.url}")
     return await request.abort()
@@ -85,7 +89,7 @@ async def main():
   if browserWSEndpoint:
     browser = await connect(browserWSEndpoint=browserWSEndpoint)  
   else:
-    browser = await launch(headless=False)
+    browser = await launch(headless=False, executablePath="chromium", userDataDir="local_chrome_data")
   
   page = await browser.newPage()
 
