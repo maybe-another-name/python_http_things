@@ -18,9 +18,9 @@ The extension 'Copy As Python-Requests' is very handy (allowing copy & paste bet
 
 # Pyppeteer Integration
 
-Several scripts; *__'2_intercept_pyppeteer_request.py'__* will look for a Chromium-based browser started with the relevant arguments; if none is found, then it will launch a new instance.
+Several scripts: *__'2_intercept_pyppeteer_request.py'__* will look for a Chromium-based browser started with the relevant arguments.  If no appropriately running Chromium is found, then it will launch a new instance.
 
-### Relevant Chromium Star Integration
+### Relevant Chromium Integration
 
 There are a variety of flags available for Chromium on startup.  Example documentation for one of them can be found here: https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md; and a full documentation can be found here: https://www.chromium.org/developers/how-tos/run-chromium-with-flags
 
